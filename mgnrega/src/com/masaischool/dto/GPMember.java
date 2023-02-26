@@ -6,8 +6,8 @@ public interface GPMember {
 
 	public String getMname();
 	public void setMname(String mname);
-	public char getGender();
-	public void setGender(char gender);
+	public String getGender();
+	public void setGender(String gender);
 	public int getAge();
 	public void setAge(int age);
 	public LocalDate getJoinDate();

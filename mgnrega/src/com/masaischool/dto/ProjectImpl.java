@@ -39,7 +39,7 @@ public class ProjectImpl implements Project {
 	
 	@Override
 	public String toString() {
-		return "Project  id=" + pid + ", Project Name=" + pname + ", start Date=" + startDate + ", AssignTo=" + gpm + "\n";
+		return "Project  id=" + pid + ", Project Name=" + pname + ", start Date=" + startDate + ", AssignTo=" + gpm.getMname() + "\n";
 	}
 	
 	

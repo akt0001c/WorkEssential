@@ -7,7 +7,7 @@ import java.util.Set;
 public class GPMemberImpl implements GPMember {
     Set<Project> sets;
     private String Mname;
-    private char gender;
+    private String gender;
     private int age;
     private LocalDate joinDate;
     private String username;
@@ -20,10 +20,11 @@ public class GPMemberImpl implements GPMember {
 	public void setMname(String mname) {
 		Mname = mname;
 	}
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
-	public void setGender(char gender) {
+	
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	public int getAge() {
@@ -69,6 +70,7 @@ public class GPMemberImpl implements GPMember {
 		GPMemberImpl other = (GPMemberImpl) obj;
 		return Objects.equals(Mname, other.Mname) && age == other.age && gender == other.gender;
 	}
+	
 	
 	
     
