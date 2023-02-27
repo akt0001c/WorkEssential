@@ -1,8 +1,8 @@
 
-This is the mgnrega managment system
-It has two type of users:
-  1.Block Development Officer
-  2.Gram Panchayat Member
+This is the mgnrega managment system<br>
+It has two type of users:<br><br>
+  1.Block Development Officer<br>
+  2.Gram Panchayat Member<br>
   
   
   
