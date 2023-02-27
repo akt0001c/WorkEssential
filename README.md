@@ -1,5 +1,5 @@
 
-This is the mgnrega managment system<br>
+##This is the mgnrega managment system<br>
 It has two type of users:<br>
                           1.Block Development Officer<br>
                           2.Gram Panchayat Member<br>
@@ -20,5 +20,5 @@ It has two type of users:<br>
                 4. View total number of days Employee worked in a project and also their wages.
                 
                
-   
+ ##ER Digram  
   ![digram](https://user-images.githubusercontent.com/110126989/221526123-138643c4-4ac9-4c36-b09a-848e06fe1763.png)
