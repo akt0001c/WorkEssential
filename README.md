@@ -10,13 +10,13 @@ It has two type of users:
 
 
   Features:<br>
-           Block Development officer
-                1.Create a Project
-                2.View List of Projects
-                3.Create new Gram Panchyat Member
-                4.View all Gram Panchyat Member
-                5.Allocate  Project to GPM
-                6.List of employee working on a particular project
+           Block Development officer<br>
+                1.Create a Project<br>
+                2.View List of Projects<br>
+                3.Create new Gram Panchyat Member<br>
+                4.View all Gram Panchyat Member<br>
+                5.Allocate  Project to GPM<br>
+                6.List of employee working on a particular project<br>
                 
           Gram Panchyat Member
                 1. Create Employee
