@@ -4,7 +4,7 @@ It has two type of users:<br>
                           1.Block Development Officer<br>
                           2.Gram Panchayat Member<br>
   
-  Features:<br>
+  **Features:<br>**
            Block Development officer<br>
                 1.Create a Project<br>
                 2.View List of Projects<br>
