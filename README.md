@@ -18,5 +18,7 @@ It has two type of users:<br>
                 2. View list of Employee
                 3. Assign employee to a project
                 4. View total number of days Employee worked in a project and also their wages.
+                
+                <h1>ER Digram</h1>
    
   ![digram](https://user-images.githubusercontent.com/110126989/221526123-138643c4-4ac9-4c36-b09a-848e06fe1763.png)
