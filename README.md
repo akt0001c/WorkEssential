@@ -18,4 +18,5 @@ It has two type of users:<br>
                 2. View list of Employee
                 3. Assign employee to a project
                 4. View total number of days Employee worked in a project and also their wages.
-
+   
+   <img src="https://github.com/akt0001c/brash-profit-9147/blob/main/digram.png">
