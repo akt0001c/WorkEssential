@@ -6,8 +6,8 @@ It has two type of users:<br>
   
   **Features:<br>**
            Block Development officer<br>
-                * Create a Project<br>
-                -.View List of Projects<br>
+                1.Create a Project<br>
+                2.View List of Projects<br>
                 3.Create new Gram Panchyat Member<br>
                 4.View all Gram Panchyat Member<br>
                 5.Allocate  Project to GPM<br>
