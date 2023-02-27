@@ -1,5 +1,6 @@
 package com.masaischool.dao;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,4 +12,5 @@ public interface GPMOperation {
  public List<Employee> viewDetailsOfEmployee() throws NoEmployeeFoundException,SQLException;
  public String assignToProjecet(String pname,String ename,int days,int wag)throws SQLException;
  public List<Employee> workDetails(String pname)throws SQLException,NoEmployeeFoundException;
+ public boolean checkCredendial(String user,String pass)throws SQLException,IOException;
 }

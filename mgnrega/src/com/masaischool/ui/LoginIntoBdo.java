@@ -3,13 +3,17 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import com.masaischool.dao.BdoOperations;
 import com.masaischool.dao.BdoOperationsImpl;
+import com.masaischool.dto.GPMember;
 import com.masaischool.dto.Project;
+import com.masaischool.exceptions.NoEmployeeFoundException;
+import com.masaischool.exceptions.NoMemberFoundException;
 import com.masaischool.exceptions.NoProjectFoundException;
 
 
@@ -25,7 +29,8 @@ public class LoginIntoBdo {
 		     String id= br.readLine();
 		     String name= br.readLine();
 		     LocalDate date= LocalDate.parse(br.readLine());
-		     bo.createProject(id, name, date);
+		    String msg= bo.createProject(id, name, date);
+		    System.out.println(msg);
 		     
 	 }
 	
@@ -35,14 +40,65 @@ public class LoginIntoBdo {
     	List<Project>  list=  bo.viewListOfProjects();
     	for(Project pro:list)
     	{
-    		System.out.println(pro);
+    		if(pro.getGpm()==null)
+    		 System.out.println("Project id ="+pro.getPid()+"  Project name = "+pro.getPname() +" Project Start Date = "+ pro.getStartDate());
+    		else
+    			 System.out.println(pro);
     	}
      }
-	public static void getOptions() throws NumberFormatException, IOException {
+     
+     
+    public static void createMember()throws IOException, SQLException 
+    {
+    	 BdoOperations bo= new BdoOperationsImpl();
+    	 System.out.println("Enter GPM Name,gender ,age, joindate :");
+    	 String name= br.readLine();
+    	 String gender= br.readLine();
+    	 int age= Integer.parseInt(br.readLine());
+    	 LocalDate ob= LocalDate.parse(br.readLine());
+    	 
+    	 Date date= Date.valueOf(ob);
+    	 
+    	 System.out.println("Create username and password :");
+    	 String user= br.readLine();
+    	 String pass= br.readLine();
+    	System.out.println( bo.createGPM(name, gender, age, date, user, pass));
+    }
+
+  
+    
+    public  static void viewAllGPMember()throws IOException , SQLException, NoMemberFoundException{
+    	BdoOperations bo= new BdoOperationsImpl();
+    	List<GPMember> list = bo.viewListOfGPM();
+    	for(GPMember gp:list)
+    	{
+    		System.out.println(gp);
+    	}
+    }
+   
+    public static void getAllocation()throws IOException,SQLException, NoMemberFoundException{
+    	 BdoOperations bo= new BdoOperationsImpl();
+    	 System.out.println("Enter Project name and GP member name whom you want to assign the project:");
+    	 String pname=br.readLine();
+    	 String gpname= br.readLine();
+    	 bo.getProjectAllocate(pname, gpname);
+    }
+    
+    public static void getListOfEmployee()throws IOException ,SQLException, NoEmployeeFoundException, NoProjectFoundException{
+    	BdoOperations bo= new BdoOperationsImpl();
+    	System.out.println("Enter Project name:");
+    	String pname=br.readLine();
+    	bo.getList(pname);
+    }
+    
+    public static void getOptions() throws NumberFormatException, IOException {
 		int choice=0;
 		do {
+			
+			System.out.println("=======================================================");
+			System.out.println();
 			System.out.println("1.Create a Project\n2.View LIst of Project\n3.Create New Gram Panchayat Member\n"
-					+ "4.View All Gram Panchayat Members\n5.See List of Employees working on a particular project");
+					+ "4.View All Gram Panchayat Members\n5.Allocate a particular project to GMP\n6.See List of Employees working on a particular project");
 			System.out.println("0.For Exit");
 			choice= Integer.parseInt(br.readLine());
 			
@@ -61,12 +117,22 @@ public class LoginIntoBdo {
 				  break;
 			case 3:
 				try {
-				    createProject();
+				      createMember();
+			  }catch(Exception ex) {System.out.println(ex);}
+				  break;
+			case 4:
+				try {
+				     viewAllGPMember();
 			  }catch(Exception ex) {System.out.println(ex);}
 				  break;
 			case 5:
 				try {
-				    createProject();
+				      getAllocation();
+			  }catch(Exception ex) {System.out.println(ex);}
+				  break;
+			case 6:
+				try {
+				      getListOfEmployee();
 			  }catch(Exception ex) {System.out.println(ex);}
 				  break;
 			default:
@@ -77,7 +143,7 @@ public class LoginIntoBdo {
 	}
 	
 	
-	public static boolean isCredentialValid(String username,String password)
+	private static boolean isCredentialValid(String username,String password)
 	{
 		if(user.equals(username)&& pass.equals(password))
 			  return true;

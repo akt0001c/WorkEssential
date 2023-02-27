@@ -1,5 +1,6 @@
 package com.masaischool.dao;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -152,6 +153,34 @@ public class GPMOperationImpl implements GPMOperation {
 		    	GetConnection.closeConnection(conn);
 		    }
 		return list;
+	}
+
+	@Override
+	public boolean checkCredendial(String user, String pass) throws SQLException, IOException {
+		Connection conn=null;
+		  try {
+			 conn= GetConnection.connectToDatabase();
+			 String query= "Select * from  gdmuseres where username=? AND password=? ";
+			 PreparedStatement ps= conn.prepareStatement(query);
+			 ps.setString(1, user);
+			 ps.setString(2, pass);
+			 ResultSet rs= ps.executeQuery();
+			 
+			 if(isSetEmpty(rs))
+			 {
+				 System.out.println("User not found");
+				 return false;
+			 }   
+			
+			System.out.println("Welcome IN the Portal "+rs.getString("username")); 
+			
+			 
+		  }
+		   catch(SQLException  ex){ System.out.println("unable to connect with server");}
+		    finally {
+		    	GetConnection.closeConnection(conn);
+		    }
+		return true;
 	}
 
 }

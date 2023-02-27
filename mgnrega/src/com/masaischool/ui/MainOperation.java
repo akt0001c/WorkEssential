@@ -19,6 +19,9 @@ public class MainOperation {
 		}catch(IOException ex) { System.out.println("Invalid Entry");}
 			    break;
 		case 2: System.out.println("Welcome in gpm portal");
+		        try {
+		        LoginIntoGPM.getInput();
+		        }catch(Exception ex) {System.out.println(ex);}
 			    break;
 		default:
 			    System.out.println("Invalid Entry");
