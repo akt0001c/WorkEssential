@@ -6,9 +6,11 @@ It has two type of users:
   
   
   
-  
+
+
+
   Features:
-         Block Development officer
+           Block Development officer
                 1.Create a Project
                 2.View List of Projects
                 3.Create new Gram Panchyat Member
