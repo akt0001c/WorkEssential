@@ -55,7 +55,9 @@ public class LoginIntoBdo {
     	 String name= br.readLine();
     	 String gender= br.readLine();
     	 int age= Integer.parseInt(br.readLine());
-    	 LocalDate ob= LocalDate.parse(br.readLine());
+    	 String d= br.readLine();
+    	
+    	 LocalDate ob= LocalDate.parse(d);
     	 
     	 Date date= Date.valueOf(ob);
     	 
