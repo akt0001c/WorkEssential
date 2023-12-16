@@ -17,4 +17,5 @@ public class Project {
     private List<Employee> assignedEmployees;
     private List<Wages> wagesList;
     private LocalDateTime createdAt;
+    private Integer isDeleted;
 }

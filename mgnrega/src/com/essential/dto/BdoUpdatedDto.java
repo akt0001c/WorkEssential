@@ -1,6 +1,6 @@
 package com.essential.dto;
 
-public class BdoUpdateDto {
+public class BdoUpdatedDto {
   String email;
   String firstName;
   String lastName;

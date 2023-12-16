@@ -18,11 +18,13 @@ public class Employee {
 	private String lname;
 	private String gender;
 	private String email;
+	private String mobno;
 	private String pasword;
 	private String position;
 	private GpMember assignedGpmMember;
 	private List<Wages> wagesList;
 	private List<Project> projects;
 	private LocalDateTime createdAt;
+	private Integer isDeleted;
 	
 }
