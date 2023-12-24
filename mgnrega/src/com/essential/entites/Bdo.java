@@ -1,7 +1,7 @@
 package com.essential.entites;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ public class Bdo {
 	private String mobno;
     private String firstName;
     private String lastName;
-    private Date dob;
+    private LocalDate dob;
     private String designation;
     private String password;
     private List<GpMember> assignedGpMembers;
