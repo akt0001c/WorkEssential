@@ -20,8 +20,8 @@ public final class MyServerStarter {
 	   
 	   ResourceBundle rs= ResourceBundle.getBundle("dbdetails");
 	   URL= rs.getString("url");
-	   USERNAME= rs.getString("password");
-	   PASSWORD= rs.getString("pass");
+	   USERNAME= rs.getString("user");
+	   PASSWORD= rs.getString("password");
    }
    
    public static Connection connectToDatabase() throws SQLException {

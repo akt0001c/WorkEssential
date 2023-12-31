@@ -16,12 +16,27 @@ import com.essential.entites.Bdo;
 import com.essential.exceptions.BdoNotFoundException;
 import com.essential.exceptions.OperationFaliureException;
 import com.essential.repository.BdoRepository;
-import com.essential.utility.MyServerStarter;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class BdoRepositoryImpl implements BdoRepository {
 	
+	private Connection conn;
+	
+	public BdoRepositoryImpl(Connection conn)
+	{
+		this.conn=conn;
+	}
+	
 	private Bdo getBdoFromResultSet(ResultSet rs) throws SQLException {
+		
 		Bdo res= new Bdo();
+		if(rs.next())
+		{
+		
 		res.setBdoId(rs.getInt("bdoId"));
 		res.setFirstName(rs.getString("firstName"));
 		res.setLastName(rs.getString("lastName"));
@@ -33,6 +48,10 @@ public class BdoRepositoryImpl implements BdoRepository {
 		res.setDob(rs.getDate("dob").toLocalDate());
 		res.setPassword(rs.getString("password"));
 		res.setIsDeleted(rs.getInt("isDeleted"));
+		}
+		
+		if(!rs.isClosed())
+		     rs.close();
 		
 		
 		return res;
@@ -58,6 +77,9 @@ public class BdoRepositoryImpl implements BdoRepository {
 			ans.add(res);
 			
 		}
+		
+		if(!rs.isClosed())
+			  rs.close();
 		return ans;
 	}
 	
@@ -65,26 +87,27 @@ public class BdoRepositoryImpl implements BdoRepository {
 		if(rs==null)
 			  return true;
 		
-		return !rs.next();
+		if(!rs.isBeforeFirst() && rs.getRow()==0)
+			 return true;
+		else
+			return false;
 	}
 	
-	public ResultSet getBdoResultSet(String email) throws SQLException  {
-		Connection conn1=null; ResultSet resultset=null;
-		
-		conn1= MyServerStarter.connectToDatabase();
-		
+	public ResultSet getBdoResultSet(String email,Connection conn) throws SQLException  {
+		 ResultSet resultset=null;
+		 
 		String tmp_query = "select * from Bdo where email=? and isDeleted=0";
-		PreparedStatement ps1= conn1.prepareStatement(tmp_query);
+		PreparedStatement ps1= conn.prepareStatement(tmp_query);
 		ps1.setString(1, email);
 		resultset = ps1.executeQuery();
-		MyServerStarter.closeConnection(conn1);
+		
 		return resultset;
 	}
 	
-	private Bdo getBdoByEmail(String email) throws SQLException, OperationFaliureException
+	private Bdo getBdoByEmail(String email,Connection conn) throws SQLException, OperationFaliureException
 	{
 		Bdo res=null;
-		ResultSet resultset = getBdoResultSet(email);
+		ResultSet resultset = getBdoResultSet(email,conn);
 		boolean flag= isResultSetEmpty(resultset);
 		
 		if( flag==true)
@@ -97,11 +120,12 @@ public class BdoRepositoryImpl implements BdoRepository {
 
 	@Override
 	public Optional<Bdo> addBdo(Bdo ob) throws SQLException, OperationFaliureException  {
-		Connection conn=null; Bdo ans= null;
+		 Bdo ans= null;
 		
 		
 		try {
-			conn= MyServerStarter.connectToDatabase();
+			conn.setAutoCommit(false);
+			
 			String query = "Insert into Bdo (email,mobno,firstName,lastName,dob,designation,password,createdAt) values (?,?,?,?,?,?,?,?)";
 			PreparedStatement ps= conn.prepareStatement(query);
 			ps.setString(1, ob.getEmail());
@@ -117,29 +141,34 @@ public class BdoRepositoryImpl implements BdoRepository {
 			if(res>0)
 			{
 				
-				ans= getBdoByEmail(ob.getEmail());
+				ans= getBdoByEmail(ob.getEmail(),conn);
+				 conn.commit();
 			}
 			else
 				 throw new Exception("Unable to add the Bdo details"); 
 		}
 		 catch(Exception ex) {
+			 conn.rollback();
 			 System.out.println(ex.getMessage());
 		     throw new OperationFaliureException("Something went wrong with the process ,Please try again");
 		     
 		 }
 		
-		finally {
-			MyServerStarter.closeConnection(conn);
-		}
+		
 		return Optional.ofNullable(ans);
 	}
 
 	@Override
 	public Optional<Bdo> updateBdoDetails(Integer bid, BdoUpdatedDto ob) throws SQLException, BdoNotFoundException, OperationFaliureException {
-		Connection conn= null; Bdo res= null;
+		if(bid==null || ob==null)
+			  throw new OperationFaliureException("Nullable parameter passed ,Please try again with valid parameters");
+		
+		
+		 Bdo res= null;
 		try {
-			res= getBdo(bid).orElseThrow(()->new BdoNotFoundException("Bdo not found for id : "+ bid+""));
-			conn= MyServerStarter.connectToDatabase();
+			conn.setAutoCommit(false);
+			
+			
 		if(ob.getEmail()!=null)
 		{
 			String query= "Update Bdo SET email=? where bdoId=?";
@@ -173,22 +202,22 @@ public class BdoRepositoryImpl implements BdoRepository {
 				 throw new Exception("Something went wrong with LastName updation due to invalid Bdo id");
 		}
 		
+		res= getBdo(bid).orElseThrow(()->new BdoNotFoundException("Bdo not found for id : "+ bid+""));
 		
+		conn.commit();
 		
 		
 		}
 		 catch(Exception ex)
 		{
+			 conn.rollback();
 			 System.out.println(ex.getMessage());
 			 throw new OperationFaliureException("Something went wrong with the operation");
 			 
 		}
 		
 		
-		
-		finally {
-			MyServerStarter.closeConnection(conn);
-		}
+	
 		
 		return Optional.ofNullable(res);
 	}
@@ -196,38 +225,43 @@ public class BdoRepositoryImpl implements BdoRepository {
 	@Override
 	public Optional<Bdo> removeBdo(Integer bid) throws SQLException, BdoNotFoundException, OperationFaliureException {
 	  Bdo res= getBdo(bid).orElseThrow(()->new BdoNotFoundException("Bdo not found for id : "+ bid+" "));
-	  Connection conn= null;
+	 
 	  try {
-		   conn= MyServerStarter.connectToDatabase();
+		   conn.setAutoCommit(false);
 		   String query= "update Bdo SET isDeleted=1 where bdoId=?";
 		   PreparedStatement ps= conn.prepareStatement(query);
 		   ps.setInt(1, bid);
 		   int tmp = ps.executeUpdate();
 		   if(tmp<=0)
 			    throw new Exception("Unable to delete Bdo details with bdo id : "+bid+" ");
+		   
+		  conn.commit();
 	  }catch(Exception ex) {
+		  conn.rollback();
 		  System.out.println(ex.getMessage());
 		  throw new OperationFaliureException("Something went wrong");
 	  }
-	  
-	  finally {
-		  MyServerStarter.closeConnection(conn);
-	  }
+	    
+	    
+	 
 		return Optional.ofNullable(res);
 	}
 
 	@Override
 	public Optional<List<Bdo>> getAllBdo() throws SQLException, OperationFaliureException {
-		Connection conn=null; List<Bdo> res= new ArrayList<>();
+		 List<Bdo> res=null;
 		try {
-			conn= MyServerStarter.connectToDatabase();
+			
 			String query = "Select * from Bdo where isDeleted=0";
 			PreparedStatement ps= conn.prepareStatement(query);
 			ResultSet rs= ps.executeQuery();
 			
+			if(isResultSetEmpty(rs))
+				 throw new BdoNotFoundException("Bdo list is empty");
+			
 			res= getBdoList(rs);
 			if(res.isEmpty())
-				  throw new Exception("No Bdo Found");
+				  throw new BdoNotFoundException("No Bdo Found");
 			
 			
 		}catch(Exception ex) {
@@ -235,17 +269,14 @@ public class BdoRepositoryImpl implements BdoRepository {
 			throw new OperationFaliureException("Something went wrong with the operation");
 		}
 		
-		finally {
-			MyServerStarter.closeConnection(conn);
-		}
 		return Optional.ofNullable(res);
 	}
 
 	@Override
 	public Optional<Bdo> getBdo(Integer bid) throws SQLException, OperationFaliureException {
-		Connection conn=null; Bdo res=null;
+		 Bdo res=null;
 		try {
-			conn= MyServerStarter.connectToDatabase();
+			
 			String query = "Select * from Bdo where bdoId=? and isDeleted=0";
 			PreparedStatement ps= conn.prepareStatement(query);
 			ps.setInt(1, bid);
@@ -265,9 +296,7 @@ public class BdoRepositoryImpl implements BdoRepository {
 			throw new OperationFaliureException("Something went wrong with the operation");
 		}
 		
-		finally {
-			MyServerStarter.closeConnection(conn);
-		}
+	
 		
 		return Optional.ofNullable(res);
 	}
