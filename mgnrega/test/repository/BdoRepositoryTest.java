@@ -41,6 +41,8 @@ public class BdoRepositoryTest {
 	@Test
 	@Order(1)
 	public void  addBdo_WhenBdoProvied_ShouldReturnExpected() throws SQLException, OperationFaliureException {
+		
+		
 		//Arrange
 		 
 		 Bdo ob = new Bdo();
@@ -63,6 +65,7 @@ public class BdoRepositoryTest {
 	@Test
 	@Order(2)
 	public void getAllBdo_WhenAskedForAllBdo_ShouldReturnListOfBdos() throws SQLException, OperationFaliureException {
+		
 		//Arrange
 		  int result=0;
 	    //Act
@@ -79,6 +82,8 @@ public class BdoRepositoryTest {
 	@Order(3)
 	public void getBdo_WhenAskedForBdoDetails_shouldReturnBdoObject () throws SQLException, OperationFaliureException
 	{
+		
+		
 		Bdo result=null;
 		
 		Optional<Bdo> res= brepo.getBdo(25);
@@ -99,6 +104,33 @@ public class BdoRepositoryTest {
 		result= res.get();
 		
 		Assertions.assertEquals("abcnew@gmail.com",result.getEmail() );
+	}
+	
+	
+	@Test
+	public void updateBdoDetails_WhenNewFirstNamePassed_ShoudReturnUpdatedBdoObject() throws SQLException, BdoNotFoundException, OperationFaliureException {
+		
+		Bdo result=null;
+		BdoUpdatedDto ob= new BdoUpdatedDto();
+	    ob.setFirstName("NewFirstName");
+		Optional<Bdo> res= brepo.updateBdoDetails(25, ob);
+		result= res.get();
+		
+		Assertions.assertEquals("NewFirstName",result.getFirstName() );
+	}
+	
+	
+
+	@Test
+	public void updateBdoDetails_WhenNewLastNamePassed_ShoudReturnUpdatedBdoObject() throws SQLException, BdoNotFoundException, OperationFaliureException {
+		
+		Bdo result=null;
+		BdoUpdatedDto ob= new BdoUpdatedDto();
+	    ob.setLastName("NewLastName");
+		Optional<Bdo> res= brepo.updateBdoDetails(25, ob);
+		result= res.get();
+		
+		Assertions.assertEquals("NewLastName",result.getLastName() );
 	}
 	
 	@AfterEach

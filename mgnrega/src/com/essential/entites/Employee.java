@@ -1,5 +1,6 @@
 package com.essential.entites;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class Employee {
 	private String gender;
 	private String email;
 	private String mobno;
+	private LocalDate dob;
 	private String pasword;
 	private String position;
 	private GpMember assignedGpmMember;
