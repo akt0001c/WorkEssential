@@ -12,7 +12,8 @@ import com.essential.exceptions.OperationFaliureException;
 public interface EmployeeRepository {
 	public  Optional<Employee>  addEmployee(Employee ob) throws SQLException,EmployeeAlreadyExistExcepton, OperationFaliureException;
 	  public  Optional<Employee>  updateEmployeeDetails(Integer eid,EmployeeUpdatedDto ob)  throws SQLException, OperationFaliureException;
-	  public  Optional<Employee>  removeEmployee(Integer eid)  throws SQLException;
+	  public  Optional<Employee>  removeEmployee(Integer eid)  throws SQLException, OperationFaliureException;
 	  public  Optional<List<Employee>>  getAllEmployees()  throws SQLException;
 	  public  Optional<Employee>  getEmployeeDetails(Integer eid)  throws SQLException;
+	  public Optional<Employee>  getEmployeeByEmpno(Integer eno)throws SQLException,OperationFaliureException;
 }

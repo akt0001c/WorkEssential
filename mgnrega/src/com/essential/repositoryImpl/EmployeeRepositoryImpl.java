@@ -34,9 +34,12 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 		this.conn = conn;
 	}
 	
+	
+	
+	
 	private Employee getEmployeeByEmail(String email ,Connection conn) throws SQLException {
 		Employee emp = new Employee();
-		String query= "Select * from Employee where email=?";
+		String query= "Select * from Employee where email=? and isDeleted=0";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setString(1, email);
 		ResultSet rs= ps.executeQuery();
@@ -65,6 +68,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 		emp.setPasword(rs.getString("password"));
 		emp.setPosition(rs.getString("position"));
 		emp.setDob( rs.getDate("dob").toLocalDate());
+		emp.setMobno(rs.getString("mobno"));
 		emp.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
 		
 		
@@ -110,7 +114,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 			ob.setPosition("Worker");
 			ob.setCreatedAt(LocalDateTime.now());
 		
-			String query= "insert into Employee  (empId,firstName,lastName,email,gender,password,position,createdAt,dob) values (?,?,?,?,?,?,?,?,?)";
+			String query= "insert into Employee  (empId,firstName,lastName,email,gender,password,position,createdAt,dob,mobno) values (?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps= conn.prepareStatement(query);
 			ps.setString(1, ob.getEmpId());
 			ps.setString(2, ob.getFname());
@@ -121,6 +125,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 			ps.setString(7, ob.getPosition());
 			ps.setTimestamp(8, Timestamp.valueOf(ob.getCreatedAt()) );
 			ps.setDate(9, Date.valueOf(ob.getDob()));
+			ps.setString(10, ob.getMobno());
+			
+			
 			int res= ps.executeUpdate();
 			if(!ps.isClosed())
 				 ps.close();
@@ -130,6 +137,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 			{
 				ans= getEmployeeByEmail(ob.getEmail(),conn);
 				conn.commit();
+				conn.setAutoCommit(true);
 			}
 			else
 			{
@@ -150,31 +158,156 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	}
 
 	@Override
-	public Optional<Employee> updateEmployeeDetails(Integer eid, EmployeeUpdatedDto ob) throws SQLException, OperationFaliureException {
+	public Optional<Employee> updateEmployeeDetails(Integer eno, EmployeeUpdatedDto ob) throws SQLException, OperationFaliureException {
 		
-		if(eid==null || ob==null)
+		if(eno==null || ob==null)
 			   throw new OperationFaliureException("Something went wrong with the operation or null values passed to operation");
 		
+		Employee emp= getEmployeeByEmpno(eno).orElseThrow(()-> new OperationFaliureException("Invalid emp  id number passed : "+ eno));
+		
+	   
+		
+		try {	
+		   conn.setAutoCommit(false);
+		
+		if(ob.getEmail()!=null)
+		{
+			String query= "Update Employee SET email=? where empno=? and isDeleted=0 ";
+			PreparedStatement ps= conn.prepareStatement(query);
+			ps.setString(1, ob.getEmail());
+			ps.setInt(2, eno);
+			int tmp= ps.executeUpdate();
+			
+			if(!ps.isClosed())
+				 ps.close();
+			
+			if(tmp<=0)
+				  throw new  Exception("Something went wrong with email updation");
+		}
+		
+		if(ob.getFname()!=null)
+		{
+			String query= "Update Employee SET firstName=? where empno=? and isDeleted=0 ";
+			PreparedStatement ps= conn.prepareStatement(query);
+			ps.setString(1,ob.getFname() );
+			ps.setInt(2, eno);
+			int tmp= ps.executeUpdate();
+			
+			if(!ps.isClosed())
+				 ps.close();
+			if(tmp<=0)
+				  throw new  Exception("Something went wrong with First Name updation");
+		}
+		
+		if(ob.getLname()!=null)
+		{
+			String query= "Update Employee SET lastName=? where empno=? and isDeleted=0 ";
+			PreparedStatement ps= conn.prepareStatement(query);
+			ps.setString(1, ob.getLname());
+			ps.setInt(2, eno);
+			int tmp= ps.executeUpdate();
+			
+			if(!ps.isClosed())
+				 ps.close();
+			if(tmp<=0)
+				  throw new  Exception("Something went wrong with Last Name updation");
+		}
+		
+		if(ob.getMobno()!=null)
+		{
+			String query= "Update Employee SET mobno=? where empno=? and isDeleted=0 ";
+			PreparedStatement ps= conn.prepareStatement(query);
+			ps.setString(1, ob.getMobno());
+			ps.setInt(2, eno);
+			int tmp= ps.executeUpdate();
+			
+			if(!ps.isClosed())
+				 ps.close();
+			if(tmp<=0)
+				  throw new  Exception("Something went wrong with employee mobile number updation");
+		}
+		
+		if(ob.getPosition()!=null)
+		{
+			String query= "Update Employee SET position=? where empno=? and isDeleted=0 ";
+			PreparedStatement ps= conn.prepareStatement(query);
+			ps.setString(1, ob.getPosition());
+			ps.setInt(2, eno);
+			int tmp= ps.executeUpdate();
+			
+			if(!ps.isClosed())
+				 ps.close();
+			if(tmp<=0)
+				  throw new  Exception("Something went wrong with  position  updation");
+		}
+		
+		 emp= getEmployeeByEmpno(eno).get();
+		 conn.commit();
+		 conn.setAutoCommit(true);
 		
 		
 		
-		return Optional.empty();
+		
+	   }catch(Exception ex) {
+		 conn.rollback();
+		 throw new OperationFaliureException("Error encountred while operation process and Unable to process updation process");
+	   }
+		
+		
+		
+		return Optional.ofNullable(emp);
 	}
 
 	@Override
-	public Optional<Employee> removeEmployee(Integer eid) throws SQLException {
+	public Optional<Employee> removeEmployee(Integer eno) throws SQLException,OperationFaliureException {
 		
-		return Optional.empty();
+	    if(eno==null)
+	    	    throw new OperationFaliureException(" null employee number passed");
+	    
+	    Employee emp= getEmployeeByEmpno(eno).orElseThrow(()-> new OperationFaliureException("Employee not exist with privided employee no :"+eno));
+	    
+	    try {
+	    	conn.setAutoCommit(false);
+	    String query= "Update Employee set isDeleted=1 where empno=? and isDeleted=0";
+	    PreparedStatement ps = conn.prepareStatement(query);
+	    ps.setInt(1, emp.getEmpno());
+	    int tmp= ps.executeUpdate();
+	    
+	    if(!ps.isClosed())
+	    	    ps.close();
+	    
+	    if(tmp<=0)
+	    	 throw new Exception(" Oops ,Something went wrong");
+	    
+	    conn.commit();
+	    conn.setAutoCommit(true);
+	    
+	    }catch(Exception exp) {
+	    	conn.rollback();
+	    	throw new OperationFaliureException("Deletion got falied");
+	    }
+	    
+		
+		return Optional.ofNullable(emp);
 	}
 
 	@Override
 	public Optional<List<Employee>> getAllEmployees() throws SQLException {
-		// TODO Auto-generated method stub
+		List<Employee> res=null;
+		String query="select * for "
+		
+		
 		return Optional.empty();
 	}
 
 	@Override
 	public Optional<Employee> getEmployeeDetails(Integer eid) throws SQLException {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Employee> getEmployeeByEmpno(Integer eno) throws SQLException, OperationFaliureException {
 		// TODO Auto-generated method stub
 		return Optional.empty();
 	}
