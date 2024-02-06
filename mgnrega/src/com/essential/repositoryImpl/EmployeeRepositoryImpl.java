@@ -15,6 +15,7 @@ import com.essential.dto.EmployeeUpdatedDto;
 import com.essential.entites.Employee;
 import com.essential.exceptions.EmployeeAlreadyExistExcepton;
 import com.essential.exceptions.EmployeeListEmptyException;
+import com.essential.exceptions.NoEmployeeFoundException;
 import com.essential.exceptions.OperationFaliureException;
 import com.essential.repository.EmployeeRepository;
 
@@ -159,7 +160,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	}
 
 	@Override
-	public Optional<Employee> updateEmployeeDetails(Integer eno, EmployeeUpdatedDto ob) throws SQLException, OperationFaliureException {
+	public Optional<Employee> updateEmployeeDetails(Integer eno, EmployeeUpdatedDto ob) throws SQLException, OperationFaliureException, NoEmployeeFoundException {
 		
 		if(eno==null || ob==null)
 			   throw new OperationFaliureException("Something went wrong with the operation or null values passed to operation");
@@ -260,7 +261,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	}
 
 	@Override
-	public Optional<Employee> removeEmployee(Integer eno) throws SQLException,OperationFaliureException {
+	public Optional<Employee> removeEmployee(Integer eno) throws SQLException,OperationFaliureException, NoEmployeeFoundException {
 		
 	    if(eno==null)
 	    	    throw new OperationFaliureException(" null employee number passed");
@@ -320,15 +321,57 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	}
 
 	@Override
-	public Optional<Employee> getEmployeeDetails(String eid) throws SQLException {
+	public Optional<Employee> getEmployeeDetails(String eid) throws SQLException ,NoEmployeeFoundException, OperationFaliureException{
+		if(eid==null)
+			   throw new OperationFaliureException("Opss, Something went wrong or null value passed as id");
 		
-		return Optional.empty();
+		Employee emp= null;
+		String query = "select * from Employee where empId=? and isDeleted=0";
+		PreparedStatement ps= conn.prepareStatement(query);
+		ps.setString(1, eid);
+		ResultSet rs= ps.executeQuery();
+		if(isResultSetEmpty(rs))
+			  throw new NoEmployeeFoundException("Invalid employee id :"+eid);
+		else
+			rs.next();
+		
+		emp=getEmployeeFromResultset(rs);
+		
+		if(!rs.isClosed())
+			  rs.close();
+		
+		if(!ps.isClosed())
+			ps.close();
+		
+		
+		return Optional.ofNullable(emp);
 	}
 
 	@Override
-	public Optional<Employee> getEmployeeByEmpno(Integer eno) throws SQLException, OperationFaliureException {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+	public Optional<Employee> getEmployeeByEmpno(Integer eno) throws SQLException, OperationFaliureException, NoEmployeeFoundException {
+		if(eno==null)
+			  throw new OperationFaliureException("Oops , Something went wrong or null value passed as employee id no");
+		
+		Employee emp = null;
+		String query= "Select * from Employee where empno=? and isDeleted=0";
+		PreparedStatement ps= conn.prepareStatement(query);
+		ps.setInt(1, eno);
+		ResultSet rs= ps.executeQuery();
+		if(isResultSetEmpty(rs))
+			  throw new NoEmployeeFoundException("Invalid employee id :"+eno);
+		else
+			rs.next();
+		
+		emp=getEmployeeFromResultset(rs);
+		
+		if(!rs.isClosed())
+			  rs.close();
+		
+		if(!ps.isClosed())
+			ps.close();
+		
+		
+		return Optional.ofNullable(emp);
 	}
 
 }
