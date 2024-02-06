@@ -14,6 +14,7 @@ import java.util.Optional;
 import com.essential.dto.EmployeeUpdatedDto;
 import com.essential.entites.Employee;
 import com.essential.exceptions.EmployeeAlreadyExistExcepton;
+import com.essential.exceptions.EmployeeListEmptyException;
 import com.essential.exceptions.OperationFaliureException;
 import com.essential.repository.EmployeeRepository;
 
@@ -292,17 +293,35 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	}
 
 	@Override
-	public Optional<List<Employee>> getAllEmployees() throws SQLException {
+	public Optional<List<Employee>> getAllEmployees() throws SQLException ,EmployeeListEmptyException {
 		List<Employee> res=null;
-		String query="select * for "
+		String query="select * from Employee where isDeleted=0 ";
+		PreparedStatement ps= conn.prepareStatement(query);
+		
+		ResultSet rs= ps.executeQuery();
+		if(isResultSetEmpty(rs))
+			  throw new EmployeeListEmptyException("Employee list is empty");
 		
 		
-		return Optional.empty();
+		res= getListOfEmployee(rs);
+		
+		if(!rs.isClosed())
+			rs.close();
+		
+		if(!ps.isClosed())
+			 ps.close();
+		
+		if(res.isEmpty())
+			  throw new EmployeeListEmptyException("Employee list found empty");
+		
+		
+		
+		return Optional.ofNullable(res);
 	}
 
 	@Override
-	public Optional<Employee> getEmployeeDetails(Integer eid) throws SQLException {
-		// TODO Auto-generated method stub
+	public Optional<Employee> getEmployeeDetails(String eid) throws SQLException {
+		
 		return Optional.empty();
 	}
 
