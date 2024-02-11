@@ -50,6 +50,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 		else
 		    rs.next();
 		
+		
+		
 		emp= getEmployeeFromResultset(rs);
 		if(!rs.isClosed())
 			  rs.close();
@@ -296,6 +298,10 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 	@Override
 	public Optional<List<Employee>> getAllEmployees() throws SQLException ,EmployeeListEmptyException {
 		List<Employee> res=null;
+		
+		
+
+		
 		String query="select * from Employee where isDeleted=0 ";
 		PreparedStatement ps= conn.prepareStatement(query);
 		
